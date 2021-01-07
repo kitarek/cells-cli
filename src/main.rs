@@ -4,6 +4,7 @@ use std::io::BufReader;
 use std::io::BufRead;
 use std::fs::File;
 use std::cmp;
+use colored::*;
 
 #[derive(StructOpt)]
 /// Print subdirectories and short contents of small files as spredsheet cells.
@@ -29,6 +30,12 @@ struct FileCellLength {
     cols_num:        usize,
     extra_line_lens: Vec<usize>
 }
+
+//struct ColumnColors {
+//    color_names:     Vec<Color>
+//    let color_res : Result<Color, ()> = "zorglub".parse();
+ //   "red string".color(color_res.unwrap_or(Color::Red));
+//}
 
 fn load_file(path :String) -> std::io::Result<Vec<String>> {
     let f = File::open(&path)?;
@@ -79,14 +86,26 @@ fn main() {
                 }
             }
         }
+        let color_filename : Result<Color, ()> = "blue".parse();
+        let color_1st : Result<Color, ()> = "yellow".parse();
+        let color_2nd : Result<Color, ()> = "green".parse();
         for line in lines {
-          print!("{:width1$}", &line.name, width1 = &len.name_len);
+          print!("{:sep2width1$}",
+            &line.name.color(color_filename.unwrap_or(Color::Red)),
+            sep = '-'
+            width1 = &len.name_len);
           let mut index = 0;
           let cols_num = line.extra_lines.len();
           for extra_line in &line.extra_lines {
-            let effective_width = if index < cols_num - 1 { len.extra_line_lens[index] } else { 0usize };
+            let effective_color = if index % 2 == 0 { color_1st } else { color_2nd };
+            let effective_width = if index < cols_num - 1
+                { len.extra_line_lens[index] } else { 0usize };
             if extra_line.chars().count() > 0usize || effective_width > 0usize {
-              print!("  {:width1$}", if effective_width == 0usize { extra_line.trim_end() } else { extra_line }, width1 = effective_width);
+              let effective_line = if effective_width == 0usize
+                { extra_line.trim_end() } else { extra_line };
+              print!("  {:width1$}",
+                effective_line.color(effective_color.unwrap_or(Color::White)),
+                width1 = effective_width);
             }
             index += 1;
           }
