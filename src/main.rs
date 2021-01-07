@@ -90,9 +90,8 @@ fn main() {
         let color_1st : Result<Color, ()> = "yellow".parse();
         let color_2nd : Result<Color, ()> = "green".parse();
         for line in lines {
-          print!("{:sep2width1$}",
+          print!("{:width1$}",
             &line.name.color(color_filename.unwrap_or(Color::Red)),
-            sep = '-'
             width1 = &len.name_len);
           let mut index = 0;
           let cols_num = line.extra_lines.len();
